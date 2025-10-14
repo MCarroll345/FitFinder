@@ -6,6 +6,9 @@ config = dotenv_values(".env")
 
 app = FastAPI()
 
+ATLAS_URI="mongodb+srv://MCarroll123:eebee261202@fitfinder.uzlpzrs.mongodb.net/?retryWrites=true&w=majority&appName=FitFinder"
+DB_NAME="user_profiles"
+
 @app.on_event("startup")
 def startup_db_client():
     app.mongodb_client = MongoClient(config["ATLAS_URI"])
