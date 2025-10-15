@@ -4,6 +4,6 @@ from pymongo.server_api import ServerApi
 
 config = dotenv_values(".env")
 
-client = MongoClient("ATLAS_URI", server_api=ServerApi('1'))
+client = MongoClient(config["ATLAS_URI"], server_api=ServerApi('1'))
 db = client.user_profiles
 collection = db["users"]
