@@ -1,20 +1,19 @@
 from fastapi import FastAPI
 from dotenv import dotenv_values
-from pymongo import MongoClient
+from pymongo.mongo_client import MongoClient
+from pymongo.server_api import ServerApi
+from .routes import router as user_router
 
 config = dotenv_values(".env")
 
 app = FastAPI()
 
-ATLAS_URI="mongodb+srv://MCarroll123:eebee261202@fitfinder.uzlpzrs.mongodb.net/?retryWrites=true&w=majority&appName=FitFinder"
-DB_NAME="user_profiles"
+client = MongoClient("ATLAS_URI", server_api=ServerApi('1'))
+db = client.user_profiles
 
-@app.on_event("startup")
-def startup_db_client():
-    app.mongodb_client = MongoClient(config["ATLAS_URI"])
-    app.database = app.mongodb_client[config["DB_NAME"]]
-    print("Connected to the MongoDB database!")
 
 @app.on_event("shutdown")
 def shutdown_db_client():
     app.mongodb_client.close()
+
+app.include_router(user_router, prefix="/user")
