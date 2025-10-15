@@ -2,17 +2,17 @@
 from pydantic import BaseModel, EmailStr, constr, conint
 
 class User(BaseModel):
-    user_id:int
-    user_name:str
-    password:str
+    email:str
+    first_name:str
+    last_name:str
 
 
 def individual_data(user):
     return{
         "id": str(user["_id"]),
-        "user_id": user["user_id"],
-        "user_name": user["user_name"],
-        "password": user["password"]
+        "email": user["email"],
+        "first_name": user["first_name"],
+        "last_name": user["last_name"]
     }
 
 

@@ -1,19 +1,25 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, APIRouter, Body, Request, Response, HTTPException, status
 from dotenv import dotenv_values
-from pymongo.mongo_client import MongoClient
-from pymongo.server_api import ServerApi
-from .routes import router as user_router
-
-config = dotenv_values(".env")
+from .models import User, all_users
+from .config import collection
 
 app = FastAPI()
+router = APIRouter()
 
-client = MongoClient("ATLAS_URI", server_api=ServerApi('1'))
-db = client.user_profiles
+@router.get("/users")
+async def get_all_users():
+    try:
+        data = list(collection.find())
+        return all_users(data)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error fetching users: {e}")
 
+@router.post("/users")
+async def create_user(new_user: User):
+    try:
+        resp = collection.insert_one(dict(new_user))
+        return {"status_code": 200, "id": str(resp.inserted_id)}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error occurred: {e}")
 
-@app.on_event("shutdown")
-def shutdown_db_client():
-    app.mongodb_client.close()
-
-app.include_router(user_router, prefix="/user")
+app.include_router(router)
